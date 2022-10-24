@@ -1,0 +1,16 @@
+version: '3.4'
+
+networks:
+  usersManagement-net:
+    
+services:
+  mongodb:
+    hostname: mongodb
+    container_name: mongodb
+    image: mongo:3.4.0
+    ports:
+      - "27017:27017"
+    networks:
+      usersManagement-net:
+        aliases:
+          - mongo_host
