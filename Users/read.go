@@ -23,7 +23,7 @@ func GetListUsers(c *fiber.Ctx) error {
 	var users []Database.User
 	defer cancel()
 
-	results, err := Database.Find(ctx, bson.M{})
+	results, err := Database.GetUsersCollection("users").Find(ctx, bson.M{})
 
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"Message": err.Error()})
@@ -54,7 +54,7 @@ func GetUser(c *fiber.Ctx) error {
 	var user Database.User
 	defer cancel()
 
-	err := Database.FindOne(ctx, bson.M{"id": userId}).Decode(&user)
+	err := Database.GetUsersCollection("users").FindOne(ctx, bson.M{"id": userId}).Decode(&user)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"Message": "User not found"})
 	}

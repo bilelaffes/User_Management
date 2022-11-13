@@ -34,12 +34,12 @@ func removeDuplicateValues(users []Database.User) []Database.User {
  */
 func addUserInDatabase(ch chan string, ctx context.Context, user Database.User) string {
 	var user2 Database.User
-	trouve := Database.FindOne(ctx, bson.M{"id": user.ID}).Decode(&user2)
+	trouve := Database.GetUsersCollection("users").FindOne(ctx, bson.M{"id": user.ID}).Decode(&user2)
 	if trouve == nil {
 		return "User already exist"
 	}
 	options := options.Update().SetUpsert(true)
-	_, err := Database.UpdateOne(ctx, bson.M{"id": user.ID}, bson.M{"$set": user}, options)
+	_, err := Database.GetUsersCollection("users").UpdateOne(ctx, bson.M{"id": user.ID}, bson.M{"$set": user}, options)
 	if err != nil {
 		ch <- err.Error()
 	}
@@ -73,7 +73,7 @@ func hashAndInsertUser(ch chan string, ctx context.Context, user Database.User, 
 		ch <- res
 	}
 
-	file, err := os.OpenFile(user.ID, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0600)
+	file, err := os.OpenFile(user.ID+".txt", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0600)
 	defer file.Close()
 
 	if err != nil {

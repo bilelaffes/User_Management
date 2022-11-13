@@ -23,7 +23,7 @@ func Login(c *fiber.Ctx) error {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"Message": err.Error()})
 	}
 
-	err := Database.FindOne(ctx, bson.M{"id": userLogin.ID}).Decode(&userInDatabase)
+	err := Database.GetUsersCollection("users").FindOne(ctx, bson.M{"id": userLogin.ID}).Decode(&userInDatabase)
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"Message": "Error id user"})
 	}

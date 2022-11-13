@@ -24,16 +24,16 @@ func DeleteUser(c *fiber.Ctx) error {
 	userId := c.Params("id")
 	defer cancel()
 
-	result, err := Database.DeleteOne(ctx, bson.M{"id": userId})
+	deletedCount, err := Database.GetUsersCollection("users").DeleteOne(ctx, bson.M{"id": userId})
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"Message": err.Error()})
 	}
 
-	if result.DeletedCount < 1 {
+	if deletedCount < 1 {
 		return c.Status(http.StatusNotFound).JSON(fiber.Map{"Message": "User not found!"})
 	}
 
-	err = os.Remove(userId)
+	err = os.Remove(userId + ".txt")
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"Message": err.Error()})
 	}

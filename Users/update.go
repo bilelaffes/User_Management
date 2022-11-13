@@ -48,7 +48,7 @@ func UpdateUser(c *fiber.Ctx) error {
 	}
 
 	options := options.Update().SetUpsert(false)
-	res, err := Database.UpdateOne(ctx, bson.M{"id": userId}, bson.M{"$set": infoUser}, options)
+	res, err := Database.GetUsersCollection("users").UpdateOne(ctx, bson.M{"id": userId}, bson.M{"$set": infoUser}, options)
 	if res.MatchedCount == 0 {
 		return c.Status(http.StatusNotFound).JSON(fiber.Map{"Message": "User not found!"})
 	}
@@ -62,12 +62,12 @@ func UpdateUser(c *fiber.Ctx) error {
 	}
 
 	if string(data) != infoUser["data"] && infoUser["data"] != nil {
-		err = os.Remove(userId)
+		err = os.Remove(userId + ".txt")
 		if err != nil {
 			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"Message": err.Error()})
 		}
 
-		file, err := os.OpenFile(userId, os.O_CREATE|os.O_RDWR, 0600)
+		file, err := os.OpenFile(userId+".txt", os.O_CREATE|os.O_RDWR, 0600)
 		defer file.Close()
 		if err != nil {
 			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"Message": err.Error()})
