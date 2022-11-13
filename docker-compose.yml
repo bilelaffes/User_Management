@@ -7,7 +7,7 @@ services:
   mongodb:
     hostname: mongodb
     container_name: mongodb
-    image: mongo:3.4.0
+    image: mongo:5.0.13
     ports:
       - "27017:27017"
     networks:
