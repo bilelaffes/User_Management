@@ -6,6 +6,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var jwtKey = []byte("secretkeydataimpact")
@@ -18,9 +19,15 @@ type JWTClaim struct {
 
 func generateJWT(id string, password string) (string, error) {
 	expirationTime := time.Now().Add(2 * time.Hour)
+
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	if err != nil {
+		return "", err
+	}
+
 	claims := &JWTClaim{
 		ID:       id,
-		Password: password,
+		Password: string(passwordHash),
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},
@@ -32,6 +39,9 @@ func generateJWT(id string, password string) (string, error) {
 }
 
 func keyFunc(token *jwt.Token) (interface{}, error) {
+	if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+		return nil, errors.New("Unexpected signing method")
+	}
 	return []byte(jwtKey), nil
 }
 

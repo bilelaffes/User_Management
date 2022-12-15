@@ -56,7 +56,7 @@ func UpdateUser(c *fiber.Ctx) error {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"Message": err.Error()})
 	}
 
-	data, err := ioutil.ReadFile(userId)
+	data, err := ioutil.ReadFile(userId + ".txt")
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"Message": err.Error()})
 	}
